@@ -4,21 +4,21 @@ This document contains the commands used in the course.
 
 ## 01_05 Bash expansions and substitutions
 ```bash
-echo ~
-echo ~-
+echo ~  # to get user current home directory
+echo ~- # to get old directory 
 ```
 
 ## 01_06 Brace expansion
 ```bash
-echo {1..10}
-echo {10..1}
-echo {01..10}
-echo {01..100}
-{echo a..z}
-echo {Z..A}
-echo {1..30..3}
-echo {a..z..2}
-touch file_{01..12}{a..d}
+echo {1..10}                                # from 1 to 10
+echo {10..1}                                # from 10 to 9
+echo {01..10}                               # from 01 to 10
+echo {01..100}                              # 001 to 100
+echo {a..z}                                 # from a to z
+echo {Z..A}                                 # from Z to A
+echo {1..30..3}                             # from 1 to 30 with 3 as interval - 1 4 7 .. 30 
+echo {a..z..2}                              # from a to z interval 2 .. a c e so on 
+touch file_{01..12}{a..d}                   #48 files like 01a 01b 01c 01d and so on 
 echo {cat,dog,fox}
 echo {cat,dog,fox}_{1..5}
 ```
@@ -26,13 +26,13 @@ echo {cat,dog,fox}_{1..5}
 ## 01_07 Parameter expansion
 ```bash
 greeting="hello there!"
-echo $greeting
-echo ${greeting:6}
-echo ${greeting:6:3}
-echo ${greeting/there/everybody}
-echo ${greeting//e/_}
-echo ${greeting/e/_}
-echo $greeting:4:3
+echo $greeting                              # prints hello there!
+echo ${greeting:6}                          # from 6th char .. 0 based index prints there!
+echo ${greeting:6:3}                        # from 6th to length3 .. prints the
+echo ${greeting/there/everybody}            # replace there with everybody .. prints  hello everybody!
+echo ${greeting//e/_}                       # replace all occurences of e with _ prints  h_llo th_r_!
+echo ${greeting/e/_}                        # replace only first occurence  .. prints h_llo there!
+echo $greeting:4:3                          # string concatenation without the braces {}
 ```
 
 ## 01_08 Command substitution
@@ -66,20 +66,20 @@ chmod +x myscript
 
 ## 02_03 Displaying text with 'echo'
 ```bash
-echo hello world
+echo hello world                    # O = hello world
 worldsize=big
-echo hello $worldsize world
-echo "The kernel is $(uname -r)"
-echo The kernel is $(uname -r)
-echo The (kernel) is $(uname -r)
-echo The \(kernel\) is $(uname -r)
-echo 'The kernel is $(uname -r)'
-echo "The (kernel) is $(uname -r)"
-echo "The (kernel) is \$(uname -r)"
-echo
-echo; echo "More space!"; echo
-echo -n "No newline"
-echo -n "Part of "; echo -n "a statement"
+echo hello $worldsize world         # O = hello big world
+echo "The kernel is $(uname -r)"    # O = The kernel is 6.2.0-1015-azure
+echo The kernel is $(uname -r)      # O = The kernel is 6.2.0-1015-azure
+echo The (kernel) is $(uname -r)    # O  = bash: syntax error near unexpected token `kernel'
+echo The \(kernel\) is $(uname -r)  # parenthesis escaped O  = The (kernel) is 6.2.0-1015-azure
+echo 'The kernel is $(uname -r)'    # literal printing O = The kernel is $(uname -r)
+echo "The (kernel) is $(uname -r)"  # O = The (kernel) is 6.2.0-1015-azure
+echo "The (kernel) is \$(uname -r)" # escaped O = The (kernel) is $(uname -r)
+echo                                #newline
+echo; echo "More space!"; echo      # 1 blank line then text then a line
+echo -n "No newline"                # newline disabled
+echo -n "Part of "; echo -n "a statement"  # O = Part of a statement
 ```
 
 ## 02_04 Working with variables
@@ -106,7 +106,7 @@ echo "The value of the myvar variable is: $myvar"
 
 declare -r myname="Scott"
 echo "The value of the myname variable is: $myname"
-myname="Michael"
+myname="Michael"                                                # This will throw error as a read only variable ..
 echo "The value of the myname variable is: $myname"
 
 declare -l lowerstring="This is some TEXT!"
@@ -121,84 +121,93 @@ echo "The value of the upperstring variable is: $upperstring"
 ```
 
 ```bash
-declare -p
-env
-echo $USER
+declare -p    # gets all the variables declared in current session + all env variables
+env           # prints environment variables ..
+echo $USER    # prints env variable user
 ```
 
 ## 02_05 Working with numbers
 ```bash
-echo $((4+4))
-echo $((8-5))
-echo $((2*3))
-echo $((8/4))
-echo $(( (3+6) - 5 * (5-2) ))
+echo $((4+4))                           # 8
+echo $((8-5))                           # 3
+echo $((2*3))                           # 6
+echo $((8/4))                           # 2
+echo $(( (3+6) - 5 * (5*2) ))           # -41
 a=3
-((a+=3))
+((a+=3))                                # same as a = a+3 , O = 6
 echo $a
+((a++))                                 
+echo $a                                 # 7
 ((a++))
-echo $a
-((a++))
-echo $a
+echo $a                                 # 8
 ((a--))
-echo $a
-(($a++))
-((a++))
-echo $a
-a=$a+2
-echo $a
-declare -i b=3
+echo $a                                 # 7
+(($a++))                                # this will throw error
+((a++))                                 
+echo $a                                 # 8
+a=$a+2      
+echo $a                                 # 10
+declare -i b=3                          # Declared as integer
 b=$b+3
-echo $b
-echo $((1/3))
+echo $b                                 # now it will be 6 , without -i declaration it will print 3+3(string)
+echo $((1/3))                           # 0 as bash only knows integers. For decimals install bc(basic calculation) or awk
 declare -i c=1
 declare -i d=3
 e=$(echo "scale=3; $c/$d" | bc)
 echo $e
 echo $RANDOM
-echo $(( 1 + $RANDOM % 10 ))
-echo $(( 1 + $RANDOM % 20 ))
+echo $(( 1 + $RANDOM % 10 ))           # here 1+random is evaluated first , 1 is added to avoid 0 . O = any 1 to 10
+echo $(( 1 + $RANDOM % 20 ))           # O = 1 to 20
 ```
 
 ## 02_06 Comparing values with test
 ```bash
-help test
+help test                               # usefull do like this help test | less
 [ -d ~ ]
-echo $?
-[ -d /bin/bash ]; echo $?
-[ -d /bin ]; echo $?
-[ "cat" = "dog" ]; echo $?
-[ "cat" = "cat" ]; echo $?
-[ 4 -lt 5 ]; echo $?
-[ 4 -lt 3 ]; echo $?
-[ ! 4 -lt 3 ]; echo $?
+echo $?                                 # its a directory so 0
+[ -d /bin/bash ]; echo $?               # not a directory so 1
+[ -d /bin ]; echo $?                    # directory , 1
+[ "cat" = "dog" ]; echo $?              # 1
+[ "cat" = "cat" ]; echo $?              # 0
+[ 4 -lt 5 ]; echo $?                    # 0 true , dast lt is used with numbers
+[ 4 -lt 3 ]; echo $?                    # 1  false
+[ ! 4 -lt 3 ]; echo $?                  # 0
+
+# my example below
+$ test -n "non empty string"
+$ echo $?
+0
+$ test -n ""
+$ echo $?
+1
+
 ```
 
 ## 02_07 Comparing values with extended test
 ```bash
-[[ 4 -lt 3 ]]; echo $?
-[[ -d ~ && -a /bin/bash ]]; echo $?
-[[ -d ~ && -a /bin/mash ]]; echo $?
-[[ -d ~ || -a /bin/bash ]]; echo $?
-[[ -d /bin/bash ]] && echo ~ is a directory
-ls && echo "listed the directory"
-true && echo "success!"
-false && echo "success!"
-[[ "cat" =~ c.* ]]; echo $?
+[[ 4 -lt 3 ]]; echo $?                              # 1
+[[ -d ~ && -a /bin/bash ]]; echo $?                 # 0 both conditions are true
+[[ -d ~ && -a /bin/mash ]]; echo $?                 # 1 - no mash file
+[[ -d ~ || -a /bin/bash ]]; echo $?                 # 0  OR condition
+[[ -d /bin/bash ]] && echo ~ is a directory         # 0 , echo statement will  run
+ls && echo "listed the directory"                   # ls command also has exit status
+true && echo "success!"                             # echo will be executed
+false && echo "success!"                            # echo will not be executed 
+[[ "cat" =~ c.* ]]; echo $?                         # these two are tests with regular expressions
 [[ "bat" =~ c.* ]]; echo $?
 ```
 
 ## 02_08 Formatting and styling text output
 ```bash
-echo -e "Name\t\tNumber"; echo -e "Scott\t\t123"
-echo -e "This text\nbreaks over\nthree lines"
-echo -e "\a"
+echo -e "Name\t\tNumber"; echo -e "Scott\t\t123"        # two tabs
+echo -e "This text\nbreaks over\nthree lines"           #new line
+echo -e "\a"                                            #Git Bash is making sound not WSL Ubuntu
 echo -e "Ding\a"
 ```
 
 ```bash
 #!/usr/bin/env bash
-echo -e "\033[33;44mColor Text\033[0m"
+echo -e "\033[33;44mColor Text\033[0m"                  #not explored coloring that much 
 echo -e "\033[30;42mColor Text\033[0m"
 echo -e "\033[41;105mColor Text"
 echo "some text that shouldn't have styling"
@@ -219,7 +228,7 @@ echo -e $ulinered"ERROR:"$none$red" Something went wrong."$none
 
 ## 02_09 Formatting output with printf
 ```bash
-echo "The results are: $(( 2 + 2 )) and $(( 3 / 1 ))"
+echo "The results are: $(( 2 + 2 )) and $(( 3 / 1 ))"               # both will print - The results are: 4 and 3
 printf "The results are: %d and %d\n" $(( 2 + 2 )) $(( 3 / 1 ))
 ```
 
@@ -228,7 +237,7 @@ printf "The results are: %d and %d\n" $(( 2 + 2 )) $(( 3 / 1 ))
 
 echo "----10----| --5--"
 
-echo "Right-aligned text and digits"
+echo "Right-aligned text and digits"                        #10s , 5digits, for left aligned use -ve
 printf "%10s: %5d\n" "A Label" 123 "B Label" 456
 
 echo "Left-aligned text, right-aligned digits"
@@ -244,8 +253,8 @@ echo "----10----| --5--"
 ```
 
 ```bash
-printf "%(%Y-%m-%d %H:%M:%S)T\n" 1658179558
-date +%s
+printf "%(%Y-%m-%d %H:%M:%S)T\n" 1658179558  # random epoc time .. time in seconds since Jan 1 1970
+date +%s                                     # current epoc time 
 date +%Y-%m-%d\ %H:%M:%S
 printf "%(%Y-%m-%d %H:%M:%S)T\n" $(date +%s)
 printf "%(%Y-%m-%d %H:%M:%S)T\n"
@@ -254,14 +263,14 @@ printf "%(%Y-%m-%d %H:%M:%S)T is %s\n" -1 "the time"
 
 ## 02_10 Working with arrays
 ```bash
-declare -a snacks=("apple" "banana" "orange")
-echo ${snacks[2]}
-snacks[5]="grapes"
-snacks+=("mango")
+declare -a snacks=("apple" "banana" "orange")                       # explicitly defining arrays ..
+echo ${snacks[2]}                                                   # element at 3rd position orange
+snacks[5]="grapes"                                                  # assigned at 6th index  .. no need to populate index 3,4
+snacks+=("mango")                                                   # assigned at the last index - 7 -- parenthesis are important
 echo ${snacks[@]}
 for i in {0..6}; do echo "$i: ${snacks[$i]}"; done
-declare -A office
-office[city]="San Francisco"
+declare -A office                                                   # associative array with -A
+office[city]="San Francisco"                                
 office["building name"]="HQ West"
 echo ${office["building name"]} is in ${office[city]}"
 ```
@@ -481,7 +490,7 @@ myfunction
 
 echo $var1
 echo $var2
-echo $var3
+echo $var3                                  # will not print anything .. its not in scope now ..
 ```
 
 ## 03_06 Reading and writing text files
@@ -597,14 +606,25 @@ echo "user: $user / pass: $pass"
 echo "What is your name?"
 read name
 echo "What is your password?"
-read -s pass
-read -p "What's your favorite animal? " animal
+read -s pass                                        # silently
+read -p "What's your favorite animal? " animal      # it will be stored in $animal variable
 
 echo "name: $name, pass: $pass, animal: $animal"
 ```
 ```bash
 help read
 ```
+
+# mine example below 
+
+$ echo "who are you?"
+who are you?
+$ read name
+ssss
+$ echo $name
+ssss
+# mine end
+
 
 ```bash
 #!/usr/bin/env bash
