@@ -52,7 +52,7 @@ echo $(( 4 / 5 ))
 
 ## 02_01 Understanding Bash script syntax
 ```bash
-nano myscript
+nano myscript                    # opening script in nano editor
 
 #!/usr/bin/env bash
 echo "hello"
