@@ -153,7 +153,7 @@ echo $b                                 # now it will be 6 , without -i declarat
 echo $((1/3))                           # 0 as bash only knows integers. For decimals install bc(basic calculation) or awk
 declare -i c=1
 declare -i d=3
-e=$(echo "scale=3; $c/$d" | bc)
+e=$(echo "scale=3; $c/$d" | bc)        # this means divide c by d using bc, scale = decimal places 
 echo $e
 echo $RANDOM
 echo $(( 1 + $RANDOM % 10 ))           # here 1+random is evaluated first , 1 is added to avoid 0 . O = any 1 to 10
@@ -162,19 +162,19 @@ echo $(( 1 + $RANDOM % 20 ))           # O = 1 to 20
 
 ## 02_06 Comparing values with test
 ```bash
-help test                               # usefull do like this help test | less
+help test                               # usefull do like this help test | less --> to print help on console ..
 [ -d ~ ]
 echo $?                                 # its a directory so 0
 [ -d /bin/bash ]; echo $?               # not a directory so 1
-[ -d /bin ]; echo $?                    # directory , 1
+[ -d /bin ]; echo $?                    # directory , 0
 [ "cat" = "dog" ]; echo $?              # 1
 [ "cat" = "cat" ]; echo $?              # 0
-[ 4 -lt 5 ]; echo $?                    # 0 true , dast lt is used with numbers
+[ 4 -lt 5 ]; echo $?                    # 0 true , dash lt is used with numbers
 [ 4 -lt 3 ]; echo $?                    # 1  false
 [ ! 4 -lt 3 ]; echo $?                  # 0
 
 # my example below
-$ test -n "non empty string"
+$ test -n "non empty string"        # checks if the string is not empty .. since its not empty so returns 0 true ..
 $ echo $?
 0
 $ test -n ""
@@ -183,13 +183,13 @@ $ echo $?
 
 ```
 
-## 02_07 Comparing values with extended test
+## 02_07 Comparing values with extended test .. for more complex scenarios .. does not require space around operator = 
 ```bash
 [[ 4 -lt 3 ]]; echo $?                              # 1
 [[ -d ~ && -a /bin/bash ]]; echo $?                 # 0 both conditions are true
 [[ -d ~ && -a /bin/mash ]]; echo $?                 # 1 - no mash file
 [[ -d ~ || -a /bin/bash ]]; echo $?                 # 0  OR condition
-[[ -d /bin/bash ]] && echo ~ is a directory         # 0 , echo statement will  run
+[[ -d /bin/bash ]] && echo ~ is a directory         # 1 , echo statement will  run
 ls && echo "listed the directory"                   # ls command also has exit status
 true && echo "success!"                             # echo will be executed
 false && echo "success!"                            # echo will not be executed 
@@ -255,10 +255,10 @@ echo "----10----| --5--"
 ```bash
 printf "%(%Y-%m-%d %H:%M:%S)T\n" 1658179558  # random epoc time .. time in seconds since Jan 1 1970
 date +%s                                     # current epoc time 
-date +%Y-%m-%d\ %H:%M:%S
-printf "%(%Y-%m-%d %H:%M:%S)T\n" $(date +%s)
-printf "%(%Y-%m-%d %H:%M:%S)T\n"
-printf "%(%Y-%m-%d %H:%M:%S)T is %s\n" -1 "the time"
+date +%Y-%m-%d\ %H:%M:%S                     # current datetime in the format 
+printf "%(%Y-%m-%d %H:%M:%S)T\n" $(date +%s) # same as first
+printf "%(%Y-%m-%d %H:%M:%S)T\n"             # looks same as above - defaults to current time
+printf "%(%Y-%m-%d %H:%M:%S)T is %s\n" -1 "the time"  #not sure ..
 ```
 
 ## 02_10 Working with arrays
@@ -387,13 +387,13 @@ done
 ```bash
 #!/usr/bin/env bash
 
-declare -A arr
-arr["name"]="scott"
-arr["id"]="1234"
-for i in "${!arr[@]}"
-do
-    echo $i: "${arr[$i]}"
-done
+    declare -A arr
+    arr["name"]="scott"
+    arr["id"]="1234"
+    for i in "${!arr[@]}"                        #get all the keys of associative array using !arr[@]
+    do
+        echo $i: "${arr[$i]}"
+    done
 ```
 
 ```bash
@@ -441,7 +441,7 @@ greet
 #!/usr/bin/env bash
 
 greet() {
-    echo "Hi there, $1"
+    echo "Hi there, $1"                        # $1 to get first argument passed ..
 }
 
 echo "And now, a greeting..."
@@ -499,7 +499,7 @@ echo $var3                                  # will not print anything .. its not
 
 for i in 1 2 3 4 5
 do
-    echo "This is line $i" > ~/textfile.txt
+    echo "This is line $i" > ~/textfile.txt                    # file is overwritten
 done
 ```
 
@@ -508,7 +508,7 @@ done
 
 for i in 1 2 3 4 5
 do
-    echo "This is line $i" >> ~/textfile.txt
+    echo "This is line $i" >> ~/textfile.txt                    # file is appended 
 done
 ```
 
